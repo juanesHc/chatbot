@@ -10,7 +10,5 @@ import lombok.Setter;
 public class ChatBotRequestDto {
 
     private String prompt;
-    private String personId;
-    private String chatId;
 
 }

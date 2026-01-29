@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -20,20 +18,25 @@ public class GeminiService {
 
 
     private final Client client;
-    private final MemoryService chatMemoryService;
 
     @Value("${genai.model}")
     private String gemini;
 
-    private static final String PROMPT_REGEX = "^(?=\\s*\\S)(?=.{1,250}$).*";
-
     public ChatBotResponseDto askGemini(ChatBotRequestDto chatBotRequestDto) {
-return null;
+        return generateGeminiResponse(chatBotRequestDto.getPrompt());
+
     }
 
-
     private ChatBotResponseDto generateGeminiResponse(String prompt) {
-        return null;
+        try {
+            GenerateContentResponse response =
+                    client.models.generateContent(gemini, prompt, null);
+
+            return new ChatBotResponseDto(response.text());
+
+        } catch (Exception e) {
+            throw  new GeminiException("Error procesando la solicitud: " + e.getMessage());
+        }
     }
 
 
