@@ -23,7 +23,4 @@ public class PersonEntity extends BaseEntity{
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private ChatEntity chatEntity;
 }

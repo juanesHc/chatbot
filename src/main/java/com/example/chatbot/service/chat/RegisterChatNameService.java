@@ -17,8 +17,8 @@ public class RegisterChatNameService {
     private final ChatMapper chatMapper;
     private final ChatRepository chatRepository;
 
-    public RegisterChatNameResponseDto registerChat(RegisterChatNameRequestDto registerChatNameRequestDto){
-        ChatEntity chatEntity=chatMapper.registerChatRequestDtoToChatEntity(registerChatNameRequestDto);
+    public RegisterChatNameResponseDto registerChat(RegisterChatNameRequestDto registerChatNameRequestDto,String personId){
+        ChatEntity chatEntity=chatMapper.registerChatNameRequestDtoToChatEntity(registerChatNameRequestDto,personId);
         chatRepository.save(chatEntity);
 
         log.info("chat name saved");
