@@ -8,6 +8,7 @@ import com.example.chatbot.entity.MemoryEntity;
 import com.example.chatbot.entity.MessageEntity;
 import com.example.chatbot.exception.GeminiException;
 import com.example.chatbot.repository.ChatRepository;
+import com.example.chatbot.repository.MemoryRepository;
 import com.example.chatbot.repository.MessageRepository;
 import com.example.chatbot.service.ai.memory.MemoryService;
 import com.example.chatbot.service.ai.message.MessageService;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ public class GeminiService {
     private final Client client;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
+    private final MemoryRepository memoryRepository;
 
     @Value("${genai.model}")
     private String gemini;
@@ -64,7 +67,7 @@ public class GeminiService {
         messageService.registerBotMessage(new RegisterMessageRequestDto(response),chatId);
 
         List<MessageEntity> messageEntities=messageRepository.findAll();
-        memoryService.extractAndStoreMemories(chatEntity,messageEntities);
+        extractAndStoreMemories(chatEntity,messageEntities);
 
         return chatBotResponseDto;
 
@@ -108,6 +111,76 @@ public class GeminiService {
             log.error("Error extracting facts: {}", e.getMessage());
             return List.of();
         }
+    }
+
+    @Transactional
+    public void extractAndStoreMemories(ChatEntity chat, List<MessageEntity> recentMessages) {
+
+        String conversationContext = buildConversationContext(recentMessages);
+
+        String prompt = """
+            Extract important facts from this conversation as key-value pairs.
+            Focus on: user preferences, personal info, important decisions, recurring topics.
+            
+            Format your response as JSON:
+            [
+              {"key": "user_name", "value": "John", "importance": 9},
+              {"key": "user_preference_food", "value": "loves pizza", "importance": 7}
+            ]
+            
+            Conversation:
+            %s
+            """.formatted(conversationContext);
+
+        List<Map<String, Object>> extractedFacts =extractFacts(prompt, String.valueOf(chat.getId()));
+
+        for (Map<String, Object> fact : extractedFacts) {
+            String key = (String) fact.get("key");
+            String value = (String) fact.get("value");
+            Integer importance = (Integer) fact.get("importance");
+
+            MemoryEntity memory = new MemoryEntity();
+
+            memory.setKey(key);
+            memory.setValue(value);
+            memory.setChatEntity(chat);
+
+            memory.setPriority(calculatePriority(importance, true));
+
+            memoryRepository.save(memory);}
+
+
+        decayOldMemories(chat);
+    }
+
+    private Integer calculatePriority(Integer importance, boolean isNew) {
+        int priority = importance * 10;
+        if (isNew) {
+            priority += 20;
+        }
+        return priority;
+    }
+
+    @Transactional
+    public void decayOldMemories(ChatEntity chat) {
+        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat);
+
+        for (MemoryEntity memory : allMemories) {
+            // Decay by 5% (you can adjust this)
+            int newPriority = (int) (memory.getPriority() * 0.95);
+            memory.setPriority(Math.max(newPriority, 1));
+        }
+
+        memoryRepository.saveAll(allMemories);
+    }
+
+    private String buildConversationContext(List<MessageEntity> messages) {
+        StringBuilder sb = new StringBuilder();
+        for (MessageEntity msg : messages) {
+            sb.append(msg.getMessageRoleEnum()).append(": ")
+                    .append(msg.getMessageContent()).append("\n");
+        }
+        return sb.toString();
     }
 
 
