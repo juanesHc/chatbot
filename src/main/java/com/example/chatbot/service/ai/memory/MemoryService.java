@@ -16,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemoryService {
     private final MemoryRepository memoryRepository;
-    private final GeminiService geminiService; // Your Gemini API wrapper
+    private final GeminiService geminiService;
 
     @Transactional
     public void extractAndStoreMemories(ChatEntity chat, List<MessageEntity> recentMessages) {
@@ -65,9 +65,9 @@ public class MemoryService {
     }
 
     private Integer calculatePriority(Integer importance, boolean isNew) {
-        int priority = importance * 10; // Scale importance
+        int priority = importance * 10;
         if (isNew) {
-            priority += 20; // Recency boost for new memories
+            priority += 20;
         }
         return priority;
     }
@@ -79,7 +79,7 @@ public class MemoryService {
         for (MemoryEntity memory : allMemories) {
             // Decay by 5% (you can adjust this)
             int newPriority = (int) (memory.getPriority() * 0.95);
-            memory.setPriority(Math.max(newPriority, 1)); // Minimum priority of 1
+            memory.setPriority(Math.max(newPriority, 1));
         }
 
         memoryRepository.saveAll(allMemories);
@@ -94,19 +94,4 @@ public class MemoryService {
         return sb.toString();
     }
 
-    /**
-     * Format memories for Gemini context
-     */
-    public String formatMemoriesForContext(List<MemoryEntity> memories) {
-        if (memories.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder("Previous context:\n");
-        for (MemoryEntity memory : memories) {
-            sb.append("- ").append(memory.getKey()).append(": ")
-                    .append(memory.getValue()).append("\n");
-        }
-        return sb.toString();
-    }
 }
