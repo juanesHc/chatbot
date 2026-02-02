@@ -5,6 +5,7 @@ import com.example.chatbot.dto.chat.response.RetrieveChatsNameResponseDto;
 import com.example.chatbot.entity.ChatEntity;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.exception.RegisterChatNameException;
+import com.example.chatbot.repository.ChatRepository;
 import com.example.chatbot.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class ChatMapper {
 
     private final PersonRepository personRepository;
+    private final ChatRepository chatRepository;
 
     public ChatEntity registerChatNameRequestDtoToChatEntity(RegisterChatNameRequestDto chatRequestDto,String personId){
         ChatEntity chatEntity=new ChatEntity();
@@ -33,6 +35,14 @@ public class ChatMapper {
 
         responseDto.setChatName(name);
         return responseDto;
+    }
+    public ChatEntity editChatNameRequestDtoToChatEntity(RegisterChatNameRequestDto chatRequestDto,String chatId){
+
+        ChatEntity chatEntity=chatRepository.findById(UUID.fromString(chatId)).
+                orElseThrow(()->new RegisterChatNameException("Not Found person"));
+
+        chatEntity.setName(chatRequestDto.getName());
+        return chatEntity;
     }
 
 

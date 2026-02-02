@@ -1,4 +1,4 @@
-package com.example.chatbot.service.chat;
+package com.example.chatbot.service.ai.chat;
 
 import com.example.chatbot.dto.chat.request.RegisterChatNameRequestDto;
 import com.example.chatbot.dto.chat.response.RegisterChatNameResponseDto;

@@ -1,6 +1,6 @@
 package com.example.chatbot.entity.enums;
 
 public enum MessageRoleEnum {
-    USER,
+    PERSON,
     BOT
 }

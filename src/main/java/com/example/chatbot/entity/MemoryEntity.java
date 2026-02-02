@@ -1,7 +1,6 @@
 package com.example.chatbot.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Table(name="memory")
 @Getter
 @Setter
-public class MemoryEntity {
+public class MemoryEntity extends BaseEntity{
 
     private String key;
 
@@ -17,6 +16,8 @@ public class MemoryEntity {
 
     private Integer priority;
 
+    @ManyToOne
+    @JoinColumn(name="chat_id")
     private ChatEntity chatEntity;
 
 

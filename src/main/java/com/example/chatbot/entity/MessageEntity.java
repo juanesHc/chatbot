@@ -1,10 +1,7 @@
 package com.example.chatbot.entity;
 
 import com.example.chatbot.entity.enums.MessageRoleEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +16,8 @@ public class MessageEntity extends BaseEntity{
 
     private String messageContent;
 
+    @ManyToOne
+    @JoinColumn(name="chat_id")
     private ChatEntity chatEntity;
 
 }

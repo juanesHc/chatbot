@@ -5,16 +5,16 @@ import com.example.chatbot.dto.chat.request.RegisterChatNameRequestDto;
 import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
 import com.example.chatbot.dto.chat.response.RegisterChatNameResponseDto;
 import com.example.chatbot.dto.chat.response.RetrieveChatsNameResponseDto;
-import com.example.chatbot.service.bot.GeminiService;
-import com.example.chatbot.service.chat.RegisterChatNameService;
-import com.example.chatbot.service.chat.RetrieveChatsService;
+import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.service.ai.gemini.GeminiService;
+import com.example.chatbot.service.ai.chat.RegisterChatNameService;
+import com.example.chatbot.service.ai.chat.RetrieveChatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,9 +40,9 @@ public class ChatBotController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @PostMapping("/ask")
-    public ResponseEntity<ChatBotResponseDto> askChatBot( @RequestBody ChatBotRequestDto chatBotRequestDto){
-        return ResponseEntity.ok(geminiService.askGemini(chatBotRequestDto));
+    @PostMapping("{chatId}/ask")
+    public ResponseEntity<ChatBotResponseDto> askChatBot(@RequestBody RegisterMessageRequestDto registerMessageRequestDto, @PathVariable String chatId){
+        return ResponseEntity.ok(geminiService.askGemini(registerMessageRequestDto,chatId));
     }
 
 }

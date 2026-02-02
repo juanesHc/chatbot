@@ -15,7 +15,6 @@ public class ChatEntity extends BaseEntity {
 
     private String name;
 
-
     @ManyToOne
     @JoinColumn(name = "person_id")
     private PersonEntity personEntity;
