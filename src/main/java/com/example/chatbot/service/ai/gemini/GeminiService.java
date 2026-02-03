@@ -3,14 +3,14 @@ package com.example.chatbot.service.ai.gemini;
 import com.example.chatbot.dto.chat.request.ChatBotRequestDto;
 import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
 import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
-import com.example.chatbot.entity.ChatEntity;
-import com.example.chatbot.entity.MemoryEntity;
-import com.example.chatbot.entity.MessageEntity;
+import com.example.chatbot.entity.*;
 import com.example.chatbot.exception.GeminiException;
 import com.example.chatbot.repository.ChatRepository;
 import com.example.chatbot.repository.MemoryRepository;
 import com.example.chatbot.repository.MessageRepository;
+import com.example.chatbot.repository.PersonRepository;
 import com.example.chatbot.service.ai.memory.MemoryService;
+import com.example.chatbot.service.ai.memory.PersonGlobalMemoryService;
 import com.example.chatbot.service.ai.message.MessageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -39,24 +39,50 @@ public class GeminiService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final MemoryRepository memoryRepository;
+    private final PersonGlobalMemoryService globalMemoryService;
+    private final PersonRepository personRepository;
 
     @Value("${genai.model}")
     private String gemini;
 
+    @Transactional
     public ChatBotResponseDto askGemini(RegisterMessageRequestDto registerMessageRequestDto,String chatId) {
         messageService.registerPersonMessage(registerMessageRequestDto,chatId);
 
         ChatEntity chatEntity=chatRepository.findById(UUID.fromString(chatId)).
                 orElseThrow(()->new GeminiException("Cant found the chat"));
 
-        List<MemoryEntity> memories=memoryService.getTopMemories(chatEntity,5);
+        PersonEntity person = chatEntity.getPersonEntity();
 
-        StringBuilder contextMemory=new StringBuilder();
-        if(!memories.isEmpty()){
-            contextMemory.append("CONTEXT");
-            for(MemoryEntity memory:memories){
-                contextMemory.append(memory.getKey()).append(memory.getValue());
+        List<MemoryEntity> chatMemories=memoryService.getTopMemories(chatEntity,5);
+        List<PersonGlobalMemoryEntity> globalMemories = globalMemoryService.getTopGlobalMemories(person, 5);
 
+        StringBuilder contextMemory = new StringBuilder();
+
+        if (!globalMemories.isEmpty()) {
+            contextMemory.append("Important user information (always remember):\n");
+            for (PersonGlobalMemoryEntity memory : globalMemories) {
+                contextMemory.append("- ")
+                        .append(memory.getKey())
+                        .append(": ")
+                        .append(memory.getValue())
+                        .append("\n");
+            }
+
+
+            if (!chatMemories.isEmpty()) {
+                contextMemory.append("\nRecent conversation context:\n");
+                for (MemoryEntity memory : chatMemories) {
+                    contextMemory.append("- ")
+                            .append(memory.getKey())
+                            .append(": ")
+                            .append(memory.getValue())
+                            .append("\n");
+                }
+            }
+
+            if (!contextMemory.isEmpty()) {
+                contextMemory.append("\nUser message: ");
             }
         }
 
@@ -145,34 +171,15 @@ public class GeminiService {
             memory.setValue(value);
             memory.setChatEntity(chat);
 
-            memory.setPriority(calculatePriority(importance, true));
+            memory.setPriority(memoryService.calculatePriority(importance, true));
 
             memoryRepository.save(memory);}
 
 
-        decayOldMemories(chat);
+        memoryService.decayOldMemories(chat);
     }
 
-    private Integer calculatePriority(Integer importance, boolean isNew) {
-        int priority = importance * 10;
-        if (isNew) {
-            priority += 20;
-        }
-        return priority;
-    }
 
-    @Transactional
-    public void decayOldMemories(ChatEntity chat) {
-        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat);
-
-        for (MemoryEntity memory : allMemories) {
-            // Decay by 5% (you can adjust this)
-            int newPriority = (int) (memory.getPriority() * 0.95);
-            memory.setPriority(Math.max(newPriority, 1));
-        }
-
-        memoryRepository.saveAll(allMemories);
-    }
 
     private String buildConversationContext(List<MessageEntity> messages) {
         StringBuilder sb = new StringBuilder();

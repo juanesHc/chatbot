@@ -21,6 +21,27 @@ public class MemoryService {
         return memoryRepository.findTopByChatEntityOrderByPriorityDesc(chat, limit);
     }
 
+    @Transactional
+    public void decayOldMemories(ChatEntity chat) {
+        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat);
+
+        for (MemoryEntity memory : allMemories) {
+            if(memory.getPriority()<60){
+                memoryRepository.delete(memory);
+            }
+        }
+
+        memoryRepository.saveAll(allMemories);
+    }
+
+    public Integer calculatePriority(Integer importance, boolean isNew) {
+        int priority = importance * 10;
+        if (isNew) {
+            priority += 20;
+        }
+        return priority;
+    }
+
 
 
 }

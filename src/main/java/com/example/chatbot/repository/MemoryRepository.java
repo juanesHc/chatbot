@@ -12,7 +12,6 @@ import java.util.UUID;
 @Repository
 public interface MemoryRepository extends JpaRepository<MemoryEntity, UUID> {
 
-    MemoryEntity findByChatEntityAndKey(ChatEntity chat, String key);
 
     List<MemoryEntity> findByChatEntity(ChatEntity chat);
 
