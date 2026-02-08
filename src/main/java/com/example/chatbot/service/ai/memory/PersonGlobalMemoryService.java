@@ -80,10 +80,9 @@ public class PersonGlobalMemoryService {
     }
 
     public List<PersonGlobalMemoryEntity> getTopGlobalMemories(PersonEntity person, int limit) {
-        // Usar PageRequest para limitar resultados
         return globalMemoryRepository.findTopByPersonOrderByPriorityDesc(
                 person,
-                PageRequest.of(0, limit) // Página 0, con 'limit' elementos
+                PageRequest.of(0, limit)
         );
     }
 
