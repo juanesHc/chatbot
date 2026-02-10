@@ -1,9 +1,12 @@
 package com.example.chatbot.service.ai.memory;
 
+import com.example.chatbot.dto.globalMemory.RetrieveGlobalMemoryResponseDto;
 import com.example.chatbot.entity.MemoryEntity;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.entity.PersonGlobalMemoryEntity;
+import com.example.chatbot.exception.ChatException;
 import com.example.chatbot.repository.PersonGlobalMemoryRepository;
+import com.example.chatbot.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -19,6 +23,7 @@ import java.util.Map;
 public class PersonGlobalMemoryService {
 
     private final PersonGlobalMemoryRepository globalMemoryRepository;
+    private final PersonRepository personRepository;
 
     private static final int GLOBAL_MEMORY_THRESHOLD = 95;
 
@@ -30,7 +35,7 @@ public class PersonGlobalMemoryService {
             String value = (String) fact.get("value");
             Integer importance = (Integer) fact.get("importance");
 
-            if (importance >= 8) {
+            if (importance >= 95) {
 
                 PersonGlobalMemoryEntity memory = globalMemoryRepository
                         .findByPersonAndKey(person, key);
@@ -55,29 +60,6 @@ public class PersonGlobalMemoryService {
         }
     }
 
-    @Transactional
-    public void promoteToGlobal(PersonEntity person, MemoryEntity chatMemory) {
-
-        if (chatMemory.getPriority() >= GLOBAL_MEMORY_THRESHOLD) {
-
-            PersonGlobalMemoryEntity globalMemory = globalMemoryRepository
-                    .findByPersonAndKey(person, chatMemory.getKey());
-
-            globalMemory.setKey(chatMemory.getKey());
-            globalMemory.setValue(chatMemory.getValue());
-            globalMemory.setPerson(person);
-            globalMemory.setPriority(chatMemory.getPriority());
-
-            if (globalMemory.getFrequency() == null) {
-                globalMemory.setFrequency(1);
-            } else {
-                globalMemory.setFrequency(globalMemory.getFrequency() + 1);
-            }
-
-            globalMemoryRepository.save(globalMemory);
-            log.info("Promoted memory to global: {} = {}", chatMemory.getKey(), chatMemory.getValue());
-        }
-    }
 
     public List<PersonGlobalMemoryEntity> getTopGlobalMemories(PersonEntity person, int limit) {
         return globalMemoryRepository.findTopByPersonOrderByPriorityDesc(
@@ -86,11 +68,6 @@ public class PersonGlobalMemoryService {
         );
     }
 
-
-
-    public List<PersonGlobalMemoryEntity> getHighPriorityMemories(PersonEntity person) {
-        return globalMemoryRepository.findHighPriorityMemories(person, GLOBAL_MEMORY_THRESHOLD);
-    }
 
     private Integer calculatePriority(Integer importance, boolean isNew) {
         if (importance == null || importance < 1) {
@@ -113,6 +90,13 @@ public class PersonGlobalMemoryService {
         int frequencyBoost = Math.min(frequency * 2, 20);
 
         return Math.min(basePriority + frequencyBoost, 100);
+    }
+
+    public List<RetrieveGlobalMemoryResponseDto> RetrieveGlobalMemories(String personId){
+
+        PersonEntity person=personRepository.findById(UUID.fromString(personId)).
+                orElseThrow(()->new ChatException("It Run into a problem trying to find the person"));
+        return globalMemoryRepository.findKeyValuesByPerson(person);
     }
 
 }

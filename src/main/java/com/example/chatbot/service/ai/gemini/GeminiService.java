@@ -20,6 +20,7 @@ import com.google.genai.types.GenerateContentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,21 +41,24 @@ public class GeminiService {
     private final MessageRepository messageRepository;
     private final MemoryRepository memoryRepository;
     private final PersonGlobalMemoryService globalMemoryService;
-    private final PersonRepository personRepository;
+    private final ObjectMapper objectMapper;
 
     @Value("${genai.model}")
     private String gemini;
 
-    @Transactional
-    public ChatBotResponseDto askGemini(RegisterMessageRequestDto registerMessageRequestDto,String chatId) {
-        messageService.registerPersonMessage(registerMessageRequestDto,chatId);
 
-        ChatEntity chatEntity=chatRepository.findById(UUID.fromString(chatId)).
-                orElseThrow(()->new GeminiException("Cant found the chat"));
+    private static final int MESSAGES_BEFORE_EXTRACTION = 5; // Extraer cada 5 mensajes
+
+    @Transactional
+    public ChatBotResponseDto askGemini(RegisterMessageRequestDto registerMessageRequestDto, String chatId) {
+
+        messageService.registerPersonMessage(registerMessageRequestDto, chatId);
+
+        ChatEntity chatEntity = chatRepository.findById(UUID.fromString(chatId))
+                .orElseThrow(() -> new GeminiException("Can't find the chat"));
 
         PersonEntity person = chatEntity.getPersonEntity();
-
-        List<MemoryEntity> chatMemories=memoryService.getTopMemories(chatEntity,5);
+        List<MemoryEntity> chatMemories = memoryService.getTopMemories(chatEntity, 3);
         List<PersonGlobalMemoryEntity> globalMemories = globalMemoryService.getTopGlobalMemories(person, 5);
 
         StringBuilder contextMemory = new StringBuilder();
@@ -68,79 +72,57 @@ public class GeminiService {
                         .append(memory.getValue())
                         .append("\n");
             }
+        }
 
-
-            if (!chatMemories.isEmpty()) {
-                contextMemory.append("\nRecent conversation context:\n");
-                for (MemoryEntity memory : chatMemories) {
-                    contextMemory.append("- ")
-                            .append(memory.getKey())
-                            .append(": ")
-                            .append(memory.getValue())
-                            .append("\n");
-                }
-            }
-
-            if (!contextMemory.isEmpty()) {
-                contextMemory.append("\nUser message: ");
+        if (!chatMemories.isEmpty()) {
+            contextMemory.append("\nRecent conversation context:\n");
+            for (MemoryEntity memory : chatMemories) {
+                contextMemory.append("- ")
+                        .append(memory.getKey())
+                        .append(": ")
+                        .append(memory.getValue())
+                        .append("\n");
             }
         }
 
-        String response=generateGeminiResponse(contextMemory+registerMessageRequestDto.getMessageContent(),chatId);
-        ChatBotResponseDto chatBotResponseDto=new ChatBotResponseDto();
+        if (contextMemory.length() > 0) {
+            contextMemory.append("\nUser message: ");
+        }
+
+        String response = generateGeminiResponse(
+                contextMemory + registerMessageRequestDto.getMessageContent(),
+                chatId
+        );
+
+        ChatBotResponseDto chatBotResponseDto = new ChatBotResponseDto();
         chatBotResponseDto.setResponse(response);
 
-        messageService.registerBotMessage(new RegisterMessageRequestDto(response),chatId);
+        messageService.registerBotMessage(new RegisterMessageRequestDto(response), chatId);
 
-        List<MessageEntity> messageEntities=messageRepository.findAll();
-        extractAndStoreMemories(chatEntity,messageEntities);
+        if (shouldExtractMemories(chatEntity)) {
+            log.info("Extracting memories for chat {}", chatId);
+            extractAndStoreMemoriesFromChat(chatEntity, person);
+        }
 
         return chatBotResponseDto;
-
     }
 
-    private String generateGeminiResponse(String prompt,String chatId) {
-        try {
-            GenerateContentResponse response =
-                    client.models.generateContent(gemini, prompt, null);
-
-
-            return (response.text());
-
-        } catch (Exception e) {
-            throw  new GeminiException("Error procesando la solicitud: " + e.getMessage());
-        }
+    /**
+     * Verificar si debemos extraer memorias
+     */
+    private boolean shouldExtractMemories(ChatEntity chat) {
+        long messageCount = messageRepository.countByChatEntity(chat);
+        return messageCount > 0 && messageCount % MESSAGES_BEFORE_EXTRACTION == 0;
     }
 
-    public List<Map<String, Object>> extractFacts(String memoryPrompt, String chatId){
-        try {
-            String jsonResponse = generateGeminiResponse(memoryPrompt, chatId);
-
-            String cleanJson = jsonResponse
-                    .replaceAll("```json", "")
-                    .replaceAll("```", "")
-                    .trim();
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Map<String, Object>> facts = objectMapper.readValue(
-                    cleanJson,
-                    new TypeReference<List<Map<String, Object>>>() {}
-            );
-
-            log.info("Extracted {} facts from conversation in chat {}", facts.size(), chatId);
-            return facts;
-
-        } catch (JsonProcessingException e) {
-            log.error("Error parsing Gemini response as JSON: {}", e.getMessage());
-            return List.of();
-        } catch (Exception e) {
-            log.error("Error extracting facts: {}", e.getMessage());
-            return List.of();
-        }
-    }
-
+    /**
+     * Extraer facts de la conversación y guardar en chat + global memories
+     */
     @Transactional
-    public void extractAndStoreMemories(ChatEntity chat, List<MessageEntity> recentMessages) {
+    public void extractAndStoreMemoriesFromChat(ChatEntity chat, PersonEntity person) {
+
+        List<MessageEntity> recentMessages = messageRepository
+                .findTopByChatEntityOrderByCreatedAtDesc(chat, PageRequest.of(0, 10));
 
         String conversationContext = buildConversationContext(recentMessages);
 
@@ -158,28 +140,60 @@ public class GeminiService {
             %s
             """.formatted(conversationContext);
 
-        List<Map<String, Object>> extractedFacts =extractFacts(prompt, String.valueOf(chat.getId()));
+        List<Map<String, Object>> extractedFacts = extractFacts(prompt, String.valueOf(chat.getId()));
 
         for (Map<String, Object> fact : extractedFacts) {
             String key = (String) fact.get("key");
             String value = (String) fact.get("value");
             Integer importance = (Integer) fact.get("importance");
 
-            MemoryEntity memory = new MemoryEntity();
+            MemoryEntity memory = memoryRepository
+                    .findByChatEntityAndKey(chat, key)
+                    .orElse(new MemoryEntity());
 
             memory.setKey(key);
             memory.setValue(value);
             memory.setChatEntity(chat);
+            memory.setPriority(memoryService.calculatePriority(importance, memory.getId() == null));
 
-            memory.setPriority(memoryService.calculatePriority(importance, true));
+            memoryRepository.save(memory);
+        }
 
-            memoryRepository.save(memory);}
-
+        globalMemoryService.storeGlobalMemories(person, extractedFacts);
 
         memoryService.decayOldMemories(chat);
     }
 
+    private String generateGeminiResponse(String prompt, String chatId) {
+        try {
+            GenerateContentResponse response =
+                    client.models.generateContent(gemini, prompt, null);
+            return response.text();
+        } catch (Exception e) {
+            throw new GeminiException("Error procesando la solicitud: " + e.getMessage());
+        }
+    }
 
+    public List<Map<String, Object>> extractFacts(String memoryPrompt, String chatId) {
+        try {
+            String jsonResponse = generateGeminiResponse(memoryPrompt, chatId);
+
+            List<Map<String, Object>> facts = objectMapper.readValue(
+                    jsonResponse,
+                    new TypeReference<List<Map<String, Object>>>() {}
+            );
+
+            log.info("Extracted {} facts from conversation in chat {}", facts.size(), chatId);
+            return facts;
+
+        } catch (JsonProcessingException e) {
+            log.error("Error parsing Gemini response as JSON: {}", e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            log.error("Error extracting facts: {}", e.getMessage());
+            return List.of();
+        }
+    }
 
     private String buildConversationContext(List<MessageEntity> messages) {
         StringBuilder sb = new StringBuilder();
