@@ -3,9 +3,12 @@ package com.example.chatbot.controller.chat;
 import com.example.chatbot.dto.chat.request.ChatBotRequestDto;
 import com.example.chatbot.dto.chat.request.RegisterChatNameRequestDto;
 import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
+import com.example.chatbot.dto.chat.response.DeleteChatResponseDto;
 import com.example.chatbot.dto.chat.response.RegisterChatNameResponseDto;
 import com.example.chatbot.dto.chat.response.RetrieveChatsNameResponseDto;
 import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.service.ai.chat.DeleteChatWithContentService;
+import com.example.chatbot.service.ai.chat.EditChatNameService;
 import com.example.chatbot.service.ai.gemini.GeminiService;
 import com.example.chatbot.service.ai.chat.RegisterChatNameService;
 import com.example.chatbot.service.ai.chat.RetrieveChatsService;
@@ -24,6 +27,8 @@ public class ChatBotController {
     private final RegisterChatNameService registerChatNameService;
     private final RetrieveChatsService retrieveChatsService;
     private final GeminiService geminiService;
+    private final DeleteChatWithContentService deleteChatWithContentService;
+    private final EditChatNameService editChatNameService;
 
     @PostMapping("/{personId}/register/name")
     public ResponseEntity<RegisterChatNameResponseDto> postChatName(@RequestBody RegisterChatNameRequestDto
@@ -44,5 +49,17 @@ public class ChatBotController {
     public ResponseEntity<ChatBotResponseDto> askChatBot(@RequestBody RegisterMessageRequestDto registerMessageRequestDto, @PathVariable String chatId){
         return ResponseEntity.ok(geminiService.askGemini(registerMessageRequestDto,chatId));
     }
+
+    @DeleteMapping("/{chatId}/delete")
+    public ResponseEntity<DeleteChatResponseDto> deleteChat(@PathVariable String chatId){
+        return ResponseEntity.ok(deleteChatWithContentService.deleteChatService(chatId));
+    }
+
+    @PutMapping("/{chatId}/updateName")
+    public ResponseEntity<RegisterChatNameResponseDto> putChat(@RequestBody RegisterChatNameRequestDto registerChatNameRequestDto,@PathVariable String chatId){
+        return ResponseEntity.ok(editChatNameService.registerChat(registerChatNameRequestDto,chatId));
+    }
+
+
 
 }
