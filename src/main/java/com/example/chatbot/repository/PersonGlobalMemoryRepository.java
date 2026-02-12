@@ -20,11 +20,7 @@ public interface PersonGlobalMemoryRepository extends JpaRepository<PersonGlobal
     @Query("SELECT m FROM PersonGlobalMemoryEntity m WHERE m.person = :person ORDER BY m.priority DESC")
     List<PersonGlobalMemoryEntity> findTopByPersonOrderByPriorityDesc(PersonEntity person, Pageable pageable);
 
-
-    @Query("SELECT m FROM PersonGlobalMemoryEntity m WHERE m.person = :person AND m.priority >= :minPriority ORDER BY m.priority DESC")
-    List<PersonGlobalMemoryEntity> findHighPriorityMemories(PersonEntity person, int minPriority);
-
-    @Query("SELECT new com.example.chatbot.dto.memory.MemoryKeyValueDto(m.key, m.value) " +
+    @Query("SELECT new com.example.chatbot.dto.globalMemory.RetrieveGlobalMemoryResponseDto(m.key, m.value) " +
             "FROM PersonGlobalMemoryEntity m WHERE m.person = :person")
     List<RetrieveGlobalMemoryResponseDto> findKeyValuesByPerson(@Param("person") PersonEntity person);
 
