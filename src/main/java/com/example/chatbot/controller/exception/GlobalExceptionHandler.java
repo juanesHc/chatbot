@@ -40,28 +40,28 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handleChat(ChatException ex) {
         log.error("Chat error", ex);
-        return new ExceptionDto("CHAT_ERROR", "An unexpected error occurred with the current chat", null);
+        return new ExceptionDto("CHAT_ERROR", ex.getMessage(), null);
     }
 
     @ExceptionHandler(GeminiException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handleGemini(GeminiException ex) {
         log.error("Gemini error", ex);
-        return new ExceptionDto("GEMINI_ERROR", "An unexpected error occurred with AI response", null);
+        return new ExceptionDto("GEMINI_ERROR", ex.getMessage(), null);
     }
 
     @ExceptionHandler(MessageException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handleMessage(MessageException ex) {
         log.error("Message error", ex);
-        return new ExceptionDto("MESSAGE_ERROR", "An unexpected error occurred with message register at currently chat", null);
+        return new ExceptionDto("MESSAGE_ERROR", ex.getMessage(), null);
     }
 
     @ExceptionHandler(RegisterChatNameException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handleRegisterChatName(RegisterChatNameException ex) {
         log.error("Register ChatName error", ex);
-        return new ExceptionDto("REGISTER_CHAT_NAME_ERROR", "An unexpected error occurred register chats name", null);
+        return new ExceptionDto("REGISTER_CHAT_NAME_ERROR", ex.getMessage(), null);
     }
 
 }
