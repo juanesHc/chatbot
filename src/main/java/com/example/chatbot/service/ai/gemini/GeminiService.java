@@ -1,14 +1,12 @@
 package com.example.chatbot.service.ai.gemini;
 
-import com.example.chatbot.dto.chat.request.ChatBotRequestDto;
 import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
-import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.RegisterMessageRequestDto;
 import com.example.chatbot.entity.*;
 import com.example.chatbot.exception.GeminiException;
 import com.example.chatbot.repository.ChatRepository;
 import com.example.chatbot.repository.MemoryRepository;
 import com.example.chatbot.repository.MessageRepository;
-import com.example.chatbot.repository.PersonRepository;
 import com.example.chatbot.service.ai.memory.MemoryService;
 import com.example.chatbot.service.ai.memory.PersonGlobalMemoryService;
 import com.example.chatbot.service.ai.message.MessageService;
