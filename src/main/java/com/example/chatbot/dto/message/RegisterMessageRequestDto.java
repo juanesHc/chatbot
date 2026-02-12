@@ -1,4 +1,4 @@
-package com.example.chatbot.dto.message.request;
+package com.example.chatbot.dto.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

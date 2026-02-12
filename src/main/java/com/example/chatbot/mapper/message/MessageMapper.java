@@ -1,6 +1,6 @@
 package com.example.chatbot.mapper.message;
 
-import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.RegisterMessageRequestDto;
 import com.example.chatbot.entity.ChatEntity;
 import com.example.chatbot.entity.MessageEntity;
 import com.example.chatbot.entity.enums.MessageRoleEnum;

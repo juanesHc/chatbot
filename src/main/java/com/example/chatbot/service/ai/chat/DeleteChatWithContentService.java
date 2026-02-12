@@ -28,8 +28,6 @@ public class DeleteChatWithContentService {
 
         ChatEntity chatEntity=chatRepository.findById(UUID.fromString(chatId)).
                 orElseThrow(()-> new ChatException("Run into a problem while trying to find chat"));
-        List<MemoryEntity> memoriesToDrop=memoryRepository.findByChatEntity(chatEntity);
-        List<MessageEntity> messagesToDrop=messageRepository.findByChatEntity(chatEntity);
 
         memoryRepository.deleteAllByChatEntity(chatEntity);
         messageRepository.deleteAllByChatEntity(chatEntity);

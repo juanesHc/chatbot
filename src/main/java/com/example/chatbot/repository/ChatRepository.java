@@ -15,5 +15,7 @@ public interface ChatRepository extends JpaRepository<ChatEntity, UUID> {
     @Query("SELECT c.name FROM ChatEntity c WHERE c.personEntity.id = :personId")
     List<String> findChatNameByPersonId(@Param("personId") UUID personId);
 
+    Boolean existsByName(String name);
+
 
 }
