@@ -26,7 +26,6 @@ public class ChatBotController {
 
     private final RegisterChatNameService registerChatNameService;
     private final RetrieveChatsService retrieveChatsService;
-    private final GeminiService geminiService;
     private final DeleteChatWithContentService deleteChatWithContentService;
     private final EditChatNameService editChatNameService;
 
@@ -46,17 +45,12 @@ public class ChatBotController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @PostMapping("{chatId}/ask")
-    public ResponseEntity<ChatBotResponseDto> askChatBot(@RequestBody RegisterMessageRequestDto registerMessageRequestDto, @PathVariable String chatId){
-        return ResponseEntity.ok(geminiService.askGemini(registerMessageRequestDto,chatId));
-    }
-
     @DeleteMapping("/{chatId}/delete")
     public ResponseEntity<DeleteChatResponseDto> deleteChat(@PathVariable String chatId){
         return ResponseEntity.ok(deleteChatWithContentService.deleteChatService(chatId));
     }
 
-    @PutMapping("/{chatId}/updateName")
+    @PutMapping("/{chatId}/update")
     public ResponseEntity<RegisterChatNameResponseDto> putChat(@Valid
                                                                    @RequestBody RegisterChatNameRequestDto registerChatNameRequestDto, @PathVariable String chatId){
         return ResponseEntity.ok(editChatNameService.registerChat(registerChatNameRequestDto,chatId));

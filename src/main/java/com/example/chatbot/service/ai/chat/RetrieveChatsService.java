@@ -1,6 +1,7 @@
 package com.example.chatbot.service.ai.chat;
 
 import com.example.chatbot.dto.chat.response.RetrieveChatsNameResponseDto;
+import com.example.chatbot.entity.ChatEntity;
 import com.example.chatbot.mapper.chat.ChatMapper;
 import com.example.chatbot.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +19,9 @@ public class RetrieveChatsService {
     private final ChatMapper chatMapper;
 
     public List<RetrieveChatsNameResponseDto> retrieveChatsName(String personId){
-        List<String> chatsName=chatRepository.findChatNameByPersonId(UUID.fromString(personId));
+        List<ChatEntity> chatsEntity=chatRepository.findByPersonEntityId(UUID.fromString(personId));
 
-        List<RetrieveChatsNameResponseDto> responseDtoList =new ArrayList<>();
-
-        chatsName.forEach(entity->responseDtoList.add(
-                chatMapper.retrieveChatsEntityToResponseDto(entity)
-        ));
-
-        return responseDtoList;
-
+        return chatMapper.chatEntityToRetrieveDto(chatsEntity);
     }
 
 }

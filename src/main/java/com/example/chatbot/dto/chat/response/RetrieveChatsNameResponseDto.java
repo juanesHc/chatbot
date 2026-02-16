@@ -10,5 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RetrieveChatsNameResponseDto {
-    private String chatName;
+    private String id;
+    private String name;
 }
