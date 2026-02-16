@@ -1,6 +1,7 @@
 package com.example.chatbot.mapper.message;
 
 import com.example.chatbot.dto.message.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.RetrieveMessageResponseDto;
 import com.example.chatbot.entity.ChatEntity;
 import com.example.chatbot.entity.MessageEntity;
 import com.example.chatbot.entity.enums.MessageRoleEnum;
@@ -28,7 +29,17 @@ public class MessageMapper {
         messageEntity.setChatEntity(chatEntity);
 
         return messageEntity;
+    }
 
+    public RetrieveMessageResponseDto messageEntityToRetrieveMessageDto(MessageEntity messageEntity){
+
+        RetrieveMessageResponseDto retrieveMessageResponseDto=new RetrieveMessageResponseDto();
+
+        retrieveMessageResponseDto.setType(messageEntity.getMessageRoleEnum());
+        retrieveMessageResponseDto.setContent(messageEntity.getMessageContent());
+        retrieveMessageResponseDto.setTimestamp(messageEntity.getCreatedAt());
+
+        return retrieveMessageResponseDto;
 
     }
 

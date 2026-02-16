@@ -10,6 +10,8 @@ import com.example.chatbot.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -33,7 +35,7 @@ public class ChatMapper {
     public RetrieveChatsNameResponseDto retrieveChatsEntityToResponseDto(String name){
         RetrieveChatsNameResponseDto responseDto=new RetrieveChatsNameResponseDto();
 
-        responseDto.setChatName(name);
+        responseDto.setName(name);
         return responseDto;
     }
     public ChatEntity editChatNameRequestDtoToChatEntity(RegisterChatNameRequestDto chatRequestDto,String chatId){
@@ -43,6 +45,23 @@ public class ChatMapper {
 
         chatEntity.setName(chatRequestDto.getName());
         return chatEntity;
+    }
+
+    public List<RetrieveChatsNameResponseDto> chatEntityToRetrieveDto(List<ChatEntity> chatEntity){
+        List<RetrieveChatsNameResponseDto> responseDtoList=new ArrayList<>();
+
+        for (ChatEntity chat:chatEntity){
+            String id= String.valueOf(chat.getId());
+            String name=chat.getName();
+
+            RetrieveChatsNameResponseDto responseDto=new RetrieveChatsNameResponseDto();
+            responseDto.setId(id);
+            responseDto.setName(name);
+
+            responseDtoList.add(responseDto);
+        }
+
+        return responseDtoList;
     }
 
 

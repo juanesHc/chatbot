@@ -21,7 +21,7 @@ public class EditChatNameService {
     public RegisterChatNameResponseDto registerChat(RegisterChatNameRequestDto registerChatNameRequestDto, String chatId){
         ChatEntity chatEntity=chatMapper.editChatNameRequestDtoToChatEntity(registerChatNameRequestDto,chatId);
         chatRepository.save(chatEntity);
-        if(validateNameIsUnique(registerChatNameRequestDto.getName())){
+        if(!validateNameIsUnique(registerChatNameRequestDto.getName())){
             throw new RegisterChatNameException("Chats name must be unique");
         }
 
