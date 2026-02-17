@@ -13,9 +13,7 @@ import lombok.Setter;
 @Setter
 public class PersonEntity extends BaseEntity{
 
-    private String givenName;
-
-    private String familyName;
+    private String name;
 
     private String email;
 

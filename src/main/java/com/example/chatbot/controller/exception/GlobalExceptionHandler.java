@@ -1,10 +1,7 @@
 package com.example.chatbot.controller.exception;
 
 import com.example.chatbot.dto.exception.ExceptionDto;
-import com.example.chatbot.exception.ChatException;
-import com.example.chatbot.exception.GeminiException;
-import com.example.chatbot.exception.MessageException;
-import com.example.chatbot.exception.RegisterChatNameException;
+import com.example.chatbot.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -62,6 +59,12 @@ public class GlobalExceptionHandler {
     public ExceptionDto handleRegisterChatName(RegisterChatNameException ex) {
         log.error("Register ChatName error", ex);
         return new ExceptionDto("REGISTER_CHAT_NAME_ERROR", ex.getMessage(), null);
+    }
+    @ExceptionHandler(RegisterUserException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleRegisterUser(RegisterUserException ex) {
+        log.error("Register user error", ex);
+        return new ExceptionDto("REGISTER_USER_ERROR", ex.getMessage(), null);
     }
 
 }
