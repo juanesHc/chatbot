@@ -16,7 +16,6 @@ public class RetrieveUsersFilterRequestDto {
     private String givenName;
     private String familyName;
     private String email;
-    private String provider;
     private String roleName;
     private LocalDate createdAt;
     private LocalDate targetDate;

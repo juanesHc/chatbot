@@ -27,7 +27,6 @@ public class PersonController {
             @RequestParam(required = false) String givenName,
             @RequestParam(required = false) String familyName,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String provider,
             @RequestParam(required = false) String roleName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdAt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate sourceDate,
@@ -38,7 +37,7 @@ public class PersonController {
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
         RetrieveUsersFilterRequestDto filter = new RetrieveUsersFilterRequestDto(
-                givenName, familyName, email, provider, roleName, createdAt, targetDate, sourceDate
+                givenName, familyName, email,  roleName, createdAt, targetDate, sourceDate
         );
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()

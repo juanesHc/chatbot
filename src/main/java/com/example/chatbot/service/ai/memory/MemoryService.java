@@ -1,9 +1,10 @@
 package com.example.chatbot.service.ai.memory;
 
-import com.example.chatbot.entity.ChatEntity;
-import com.example.chatbot.entity.MemoryEntity;
-import com.example.chatbot.entity.MessageEntity;
+import com.example.chatbot.dto.globalMemory.DeleteGlobalMemoryResponseDto;
+import com.example.chatbot.entity.*;
+import com.example.chatbot.exception.MemoryException;
 import com.example.chatbot.repository.MemoryRepository;
+import com.example.chatbot.repository.PersonGlobalMemoryRepository;
 import com.example.chatbot.service.ai.gemini.GeminiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class MemoryService {
+
+    private final PersonGlobalMemoryRepository personGlobalMemoryRepository;
     private final MemoryRepository memoryRepository;
 
     public List<MemoryEntity> getTopMemories(ChatEntity chat, int limit) {
@@ -42,6 +46,12 @@ public class MemoryService {
         return priority;
     }
 
+    public DeleteGlobalMemoryResponseDto deleteMemory(String memoryId){
+        PersonGlobalMemoryEntity memoryEntity=personGlobalMemoryRepository.findById(UUID.fromString(memoryId)).
+                orElseThrow(()->new MemoryException("Couldnt delete the memory"));
 
+        personGlobalMemoryRepository.delete(memoryEntity);
+        return new DeleteGlobalMemoryResponseDto("Memory successfully drop");
+    }
 
 }

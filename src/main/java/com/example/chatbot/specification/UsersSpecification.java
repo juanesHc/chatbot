@@ -10,20 +10,20 @@ public class UsersSpecification {
 
     private static Specification<PersonEntity> hasGivenName(String givenName){
         return ((root, query, cb) -> cb.like(
-                cb.lower(root.get("givenName")),"%"+givenName.toLowerCase()+"%"
+                cb.lower(root.get("firstName")),"%"+givenName.toLowerCase()+"%"
         ));
     }
 
     private static Specification<PersonEntity> hasFamilyName(String familyName){
         return ((root, query, cb) -> cb.like(
-                cb.lower(root.get("familyName")),"%"+familyName.toLowerCase()+"%"
+                cb.lower(root.get("lastName")),"%"+familyName.toLowerCase()+"%"
         ));
     }
 
     private static Specification<PersonEntity> hasRole(String roleName) {
         return (root, query, cb) ->
                 cb.equal(
-                        root.get("role").get("type"),
+                        root.get("roleEntity").get("type"),
                         roleName
                 );
     }

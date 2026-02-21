@@ -67,6 +67,13 @@ public class GlobalExceptionHandler {
         return new ExceptionDto("REGISTER_USER_ERROR", ex.getMessage(), null);
     }
 
+    @ExceptionHandler(MemoryException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleRegisterUser(MemoryException ex) {
+        log.error("Delete memory error", ex);
+        return new ExceptionDto("DELETE_MEMORY_ERROR", ex.getMessage(), null);
+    }
+
     @ExceptionHandler(LoginException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handleLogin(LoginException ex) {
