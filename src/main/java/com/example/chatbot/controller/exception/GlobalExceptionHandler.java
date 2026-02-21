@@ -67,4 +67,11 @@ public class GlobalExceptionHandler {
         return new ExceptionDto("REGISTER_USER_ERROR", ex.getMessage(), null);
     }
 
+    @ExceptionHandler(LoginException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleLogin(LoginException ex) {
+        log.error("Login error", ex);
+        return new ExceptionDto("LOGIN_ERROR", ex.getMessage(), null);
+    }
+
 }

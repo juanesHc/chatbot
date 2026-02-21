@@ -2,6 +2,7 @@ package com.example.chatbot.service.jwt;
 
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.entity.model.SecurityUser;
+import com.example.chatbot.exception.LoginException;
 import com.example.chatbot.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         PersonEntity personEntity =
-                personRepository.findByEmail(email);
+                personRepository.findByEmail(email).orElseThrow(()->new LoginException("Couldnt find the user"));
         if(personEntity.equals(null)){
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
