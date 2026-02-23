@@ -1,9 +1,10 @@
 package com.example.chatbot.service.ai.memory;
 
-import com.example.chatbot.entity.ChatEntity;
-import com.example.chatbot.entity.MemoryEntity;
-import com.example.chatbot.entity.MessageEntity;
+import com.example.chatbot.dto.globalMemory.DeleteGlobalMemoryResponseDto;
+import com.example.chatbot.entity.*;
+import com.example.chatbot.exception.MemoryException;
 import com.example.chatbot.repository.MemoryRepository;
+import com.example.chatbot.repository.PersonGlobalMemoryRepository;
 import com.example.chatbot.service.ai.gemini.GeminiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,19 +12,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class MemoryService {
+
+    private final PersonGlobalMemoryRepository personGlobalMemoryRepository;
     private final MemoryRepository memoryRepository;
 
     public List<MemoryEntity> getTopMemories(ChatEntity chat, int limit) {
-        return memoryRepository.findTopByChatEntityOrderByPriorityDesc(chat, limit);
+        return memoryRepository.findTopByChatEntityOrderByPriorityDesc(chat, limit).
+                orElseThrow(()->new MemoryException("it run into a problem trying to retrieve memories"));
     }
 
     @Transactional
     public void decayOldMemories(ChatEntity chat) {
-        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat);
+        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat).
+                orElseThrow(()->new MemoryException("It run into a problem trying to retrieve chats memory"));
 
         for (MemoryEntity memory : allMemories) {
             if(memory.getPriority()<60){
@@ -42,6 +48,12 @@ public class MemoryService {
         return priority;
     }
 
+    public DeleteGlobalMemoryResponseDto deleteMemory(String memoryId){
+        PersonGlobalMemoryEntity memoryEntity=personGlobalMemoryRepository.findById(UUID.fromString(memoryId)).
+                orElseThrow(()->new MemoryException("Couldnt delete the memory"));
 
+        personGlobalMemoryRepository.delete(memoryEntity);
+        return new DeleteGlobalMemoryResponseDto("Memory successfully drop");
+    }
 
 }
