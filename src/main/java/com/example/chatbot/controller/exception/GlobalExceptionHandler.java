@@ -74,6 +74,22 @@ public class GlobalExceptionHandler {
         return new ExceptionDto("DELETE_MEMORY_ERROR", ex.getMessage(), null);
     }
 
+    @ExceptionHandler(RetrieveRolesException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleRetrieveRole(RetrieveRolesException ex) {
+        log.error("Retrieve Roles error", ex);
+        return new ExceptionDto("RETRIEVE_ROLES_ERROR", ex.getMessage(), null);
+    }
+
+
+    @ExceptionHandler(GlobalMemoryException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleRetrieveGlobalMemory(GlobalMemoryException ex) {
+        log.error("Retrieve Global Memories error", ex);
+        return new ExceptionDto("RETRIEVE_GLOBAL_MEMORIES_ERROR", ex.getMessage(), null);
+    }
+
+
     @ExceptionHandler(LoginException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handleLogin(LoginException ex) {

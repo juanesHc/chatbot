@@ -4,6 +4,7 @@ import com.example.chatbot.dto.message.RegisterMessageRequestDto;
 import com.example.chatbot.dto.message.RetrieveMessageResponseDto;
 import com.example.chatbot.entity.MessageEntity;
 import com.example.chatbot.entity.enums.MessageRoleEnum;
+import com.example.chatbot.exception.MessageException;
 import com.example.chatbot.mapper.message.MessageMapper;
 import com.example.chatbot.repository.MessageRepository;
 import jakarta.transaction.Transactional;
@@ -38,7 +39,8 @@ public class MessageService {
 
     @Transactional
     public List<RetrieveMessageResponseDto> getMessagesByChatId(String chatId) {
-        List<MessageEntity> messages = messageRepository.findByChatIdOrderByTimestampAsc(UUID.fromString(chatId));
+        List<MessageEntity> messages = messageRepository.findByChatIdOrderByTimestampAsc(UUID.fromString(chatId)).
+                orElseThrow(()->new MessageException("It run into a problem trying to retrieve chats messages"));
         List<RetrieveMessageResponseDto> responseDtos= new ArrayList<>();
 
         for(MessageEntity messageEntity:messages){

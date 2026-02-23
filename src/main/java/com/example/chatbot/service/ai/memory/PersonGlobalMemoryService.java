@@ -5,6 +5,7 @@ import com.example.chatbot.entity.MemoryEntity;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.entity.PersonGlobalMemoryEntity;
 import com.example.chatbot.exception.ChatException;
+import com.example.chatbot.exception.GlobalMemoryException;
 import com.example.chatbot.repository.PersonGlobalMemoryRepository;
 import com.example.chatbot.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,8 @@ public class PersonGlobalMemoryService {
             if (importance >= GLOBAL_MEMORY_THRESHOLD) {
 
                 PersonGlobalMemoryEntity memory = globalMemoryRepository
-                        .findByPersonAndKey(person, key);
+                        .findByPersonAndKey(person, key).
+                        orElseThrow(()->new GlobalMemoryException("It run into a problem trying to retrieve global memories"));
 
                 boolean isNew = (memory == null);
 
@@ -83,7 +85,7 @@ public class PersonGlobalMemoryService {
         return globalMemoryRepository.findTopByPersonOrderByPriorityDesc(
                 person,
                 PageRequest.of(0, limit)
-        );
+        ).orElseThrow(()->new GlobalMemoryException("It run into a problem trying to retrieve global memories"));
     }
 
     private Integer calculatePriority(Integer importance, boolean isNew) {
@@ -141,7 +143,8 @@ public class PersonGlobalMemoryService {
     public List<RetrieveGlobalMemoryResponseDto> RetrieveGlobalMemories(String personId) {
         PersonEntity person = personRepository.findById(UUID.fromString(personId))
                 .orElseThrow(() -> new ChatException("It Run into a problem trying to find the person"));
-        return globalMemoryRepository.findKeyValuesByPerson(person);
+        return globalMemoryRepository.findKeyValuesByPerson(person)
+                .orElseThrow(()->new GlobalMemoryException("It run into a problem trying to retrieve global memories"));
     }
 
 }

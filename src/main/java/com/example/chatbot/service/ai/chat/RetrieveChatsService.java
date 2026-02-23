@@ -2,6 +2,7 @@ package com.example.chatbot.service.ai.chat;
 
 import com.example.chatbot.dto.chat.response.RetrieveChatsNameResponseDto;
 import com.example.chatbot.entity.ChatEntity;
+import com.example.chatbot.exception.ChatException;
 import com.example.chatbot.mapper.chat.ChatMapper;
 import com.example.chatbot.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,8 @@ public class RetrieveChatsService {
     private final ChatMapper chatMapper;
 
     public List<RetrieveChatsNameResponseDto> retrieveChatsName(String personId){
-        List<ChatEntity> chatsEntity=chatRepository.findByPersonEntityId(UUID.fromString(personId));
+        List<ChatEntity> chatsEntity=chatRepository.findByPersonEntityId(UUID.fromString(personId)).
+                orElseThrow(()->new ChatException("It run into a problem trying to retrieve chats name"));
 
         return chatMapper.chatEntityToRetrieveDto(chatsEntity);
     }

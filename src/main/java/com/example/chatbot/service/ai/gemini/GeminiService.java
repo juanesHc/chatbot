@@ -4,6 +4,7 @@ import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
 import com.example.chatbot.dto.message.RegisterMessageRequestDto;
 import com.example.chatbot.entity.*;
 import com.example.chatbot.exception.GeminiException;
+import com.example.chatbot.exception.MessageException;
 import com.example.chatbot.repository.ChatRepository;
 import com.example.chatbot.repository.MemoryRepository;
 import com.example.chatbot.repository.MessageRepository;
@@ -106,7 +107,8 @@ public class GeminiService {
     public void extractAndStoreMemoriesFromChat(ChatEntity chat, PersonEntity person) {
 
         List<MessageEntity> recentMessages = messageRepository
-                .findTopByChatEntityOrderByCreatedAtDesc(chat, PageRequest.of(0, 10));
+                .findTopByChatEntityOrderByCreatedAtDesc(chat, PageRequest.of(0, 10)).
+                orElseThrow(()->new MessageException("It run into a problem trying to retrieve messages"));
 
         String conversationContext = buildConversationContext(recentMessages);
 

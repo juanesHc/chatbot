@@ -22,12 +22,14 @@ public class MemoryService {
     private final MemoryRepository memoryRepository;
 
     public List<MemoryEntity> getTopMemories(ChatEntity chat, int limit) {
-        return memoryRepository.findTopByChatEntityOrderByPriorityDesc(chat, limit);
+        return memoryRepository.findTopByChatEntityOrderByPriorityDesc(chat, limit).
+                orElseThrow(()->new MemoryException("it run into a problem trying to retrieve memories"));
     }
 
     @Transactional
     public void decayOldMemories(ChatEntity chat) {
-        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat);
+        List<MemoryEntity> allMemories = memoryRepository.findByChatEntity(chat).
+                orElseThrow(()->new MemoryException("It run into a problem trying to retrieve chats memory"));
 
         for (MemoryEntity memory : allMemories) {
             if(memory.getPriority()<60){

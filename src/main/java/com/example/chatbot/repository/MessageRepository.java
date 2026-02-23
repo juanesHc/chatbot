@@ -10,18 +10,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface MessageRepository extends JpaRepository<MessageEntity, UUID> {
 
-    long countByChatEntity(ChatEntity chatEntity);
-
     void deleteAllByChatEntity(ChatEntity chatEntity);
 
     @Query("SELECT m FROM MessageEntity m WHERE m.chatEntity.id = :chatId ORDER BY m.createdAt ASC")
-    List<MessageEntity> findByChatIdOrderByTimestampAsc(@Param("chatId") UUID chatId);
+    Optional<List<MessageEntity>> findByChatIdOrderByTimestampAsc(@Param("chatId") UUID chatId);
 
-    List<MessageEntity> findTopByChatEntityOrderByCreatedAtDesc(ChatEntity chat, Pageable pageable);
+    Optional<List<MessageEntity>> findTopByChatEntityOrderByCreatedAtDesc(ChatEntity chat, Pageable pageable);
 
 }

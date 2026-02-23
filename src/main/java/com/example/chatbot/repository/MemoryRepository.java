@@ -14,12 +14,12 @@ import java.util.UUID;
 public interface MemoryRepository extends JpaRepository<MemoryEntity, UUID> {
 
 
-    List<MemoryEntity> findByChatEntity(ChatEntity chat);
+    Optional<List<MemoryEntity>> findByChatEntity(ChatEntity chat);
 
     void deleteAllByChatEntity(ChatEntity chatEntity);
 
     @Query("SELECT m FROM MemoryEntity m WHERE m.chatEntity = :chat ORDER BY m.priority DESC LIMIT :limit")
-    List<MemoryEntity> findTopByChatEntityOrderByPriorityDesc(ChatEntity chat, int limit);
+    Optional<List<MemoryEntity>> findTopByChatEntityOrderByPriorityDesc(ChatEntity chat, int limit);
 
     Optional<MemoryEntity> findByChatEntityAndKey(ChatEntity chat, String key);
 
