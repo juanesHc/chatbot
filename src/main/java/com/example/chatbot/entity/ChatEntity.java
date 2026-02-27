@@ -1,11 +1,11 @@
 package com.example.chatbot.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "chat")
@@ -18,5 +18,9 @@ public class ChatEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "person_id")
     private PersonEntity personEntity;
+
+    @OneToMany(mappedBy = "chatEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageEntity> messageEntities = new ArrayList<>();
+
 
 }

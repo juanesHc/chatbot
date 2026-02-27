@@ -97,4 +97,11 @@ public class GlobalExceptionHandler {
         return new ExceptionDto("LOGIN_ERROR", ex.getMessage(), null);
     }
 
+    @ExceptionHandler(UpdateUserException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleEditAccount(UpdateUserException ex) {
+        log.error("edit user error", ex);
+        return new ExceptionDto("UPDATE_USER_ACCOUNT_ERROR", ex.getMessage(), null);
+    }
+
 }
