@@ -1,27 +1,27 @@
-package com.example.chatbot.controller.person;
+package com.example.chatbot.controller.admin;
 
-import com.example.chatbot.dto.role.RetrieveRolesResponseDto;
+import com.example.chatbot.dto.user.request.RegisterUserWithRoleRequestDto;
 import com.example.chatbot.dto.user.request.RetrieveUsersFilterRequestDto;
 import com.example.chatbot.dto.user.response.PagedUsersResponseDto;
+import com.example.chatbot.dto.user.response.RegisterUserWithRoleResponseDto;
+import com.example.chatbot.service.person.admin.RegisterUserWithRoleService;
 import com.example.chatbot.service.person.admin.RetrieveUsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class PersonController {
+public class AdminController {
 
     private final RetrieveUsersService userService;
+    private final RegisterUserWithRoleService registerUserWithRoleService;
 
     @GetMapping("/retrieve")
     public ResponseEntity<PagedUsersResponseDto> retrieveUsers(
@@ -47,6 +47,14 @@ public class PersonController {
         return ResponseEntity.ok(
                 userService.retrieveUsers(filter, PageRequest.of(page, size, sort))
         );
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterUserWithRoleResponseDto> postUserByAdmin(@RequestBody RegisterUserWithRoleRequestDto requestDto){
+
+        return ResponseEntity.ok(registerUserWithRoleService.registerUserWithRole(requestDto));
+
+
     }
 
 }
