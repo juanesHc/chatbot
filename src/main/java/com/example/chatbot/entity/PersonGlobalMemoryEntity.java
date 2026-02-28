@@ -22,6 +22,6 @@ public class PersonGlobalMemoryEntity extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name="person_id")
-    private PersonEntity person;
+    private PersonEntity personEntity;
 
 }

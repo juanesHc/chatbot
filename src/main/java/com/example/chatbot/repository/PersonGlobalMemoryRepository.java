@@ -16,13 +16,13 @@ import java.util.UUID;
 @Repository
 public interface PersonGlobalMemoryRepository extends JpaRepository<PersonGlobalMemoryEntity, UUID> {
 
-    Optional<PersonGlobalMemoryEntity> findByPersonAndKey(PersonEntity person, String key);
+    Optional<PersonGlobalMemoryEntity> findByPersonEntityAndKey(PersonEntity personEntity, String key);
 
-    @Query("SELECT m FROM PersonGlobalMemoryEntity m WHERE m.person = :person ORDER BY m.priority DESC")
-    Optional<List<PersonGlobalMemoryEntity>> findTopByPersonOrderByPriorityDesc(PersonEntity person, Pageable pageable);
+    @Query("SELECT m FROM PersonGlobalMemoryEntity m WHERE m.personEntity = :person ORDER BY m.priority DESC")
+    Optional<List<PersonGlobalMemoryEntity>> findTopByPersonOrderByPriorityDesc(@Param("person") PersonEntity person, Pageable pageable);
 
-    @Query("SELECT new com.example.chatbot.dto.globalMemory.RetrieveGlobalMemoryResponseDto(m.id,m.key, m.value) " +
-            "FROM PersonGlobalMemoryEntity m WHERE m.person = :person")
+    @Query("SELECT new com.example.chatbot.dto.globalMemory.RetrieveGlobalMemoryResponseDto(m.id, m.key, m.value) " +
+            "FROM PersonGlobalMemoryEntity m WHERE m.personEntity = :person")
     Optional<List<RetrieveGlobalMemoryResponseDto>> findKeyValuesByPerson(@Param("person") PersonEntity person);
 
 }

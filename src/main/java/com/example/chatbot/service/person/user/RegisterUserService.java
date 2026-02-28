@@ -1,6 +1,7 @@
 package com.example.chatbot.service.person.user;
 
 import com.example.chatbot.dto.login.response.LoginResponseDto;
+import com.example.chatbot.dto.notification.request.RegisterNotificationRequestDto;
 import com.example.chatbot.dto.user.request.RegisterUserRequestDto;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.entity.RoleEntity;
@@ -11,6 +12,7 @@ import com.example.chatbot.mapper.person.PersonMapper;
 import com.example.chatbot.repository.PersonRepository;
 import com.example.chatbot.repository.RoleRepository;
 import com.example.chatbot.service.jwt.JwtService;
+import com.example.chatbot.service.messaging.MessagingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class RegisterUserService {
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
     private final RoleRepository roleRepository;
+    private final MessagingService messagingService;
 
     public LoginResponseDto registerByGoogleProvider(RegisterUserRequestDto OAuth2GoogleRequestDto) {
 
@@ -39,7 +42,12 @@ public class RegisterUserService {
 
         RoleEntity roleEntity=roleRepository.findByType(RoleEnum.USER).orElseThrow(()->new RegisterUserException("Couldnt add role"));
         newUser.setRoleEntity(roleEntity);
-        personRepository.save(newUser);
+        PersonEntity personSaved=personRepository.save(newUser);
+
+        RegisterNotificationRequestDto registerNotificationRequestDto=new RegisterNotificationRequestDto();
+        registerNotificationRequestDto.setMessageDescription("Hello "+personSaved.getFirstName()+" Welcome to ChatBotApp");
+
+        messagingService.registerInternalNotification(String.valueOf(personSaved.getId()),registerNotificationRequestDto);
 
         return generateTokenGoogle(newUser);
 
