@@ -11,8 +11,7 @@ import lombok.Setter;
 @Setter
 public class NotificationEntity extends BaseEntity{
 
-    @Enumerated(EnumType.STRING)
-    public NotificationTypeEnum notificationTypeEnum;
+    public String subject;
 
     public String description;
 

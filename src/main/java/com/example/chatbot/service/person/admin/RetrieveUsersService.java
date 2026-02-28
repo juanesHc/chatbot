@@ -3,7 +3,6 @@ package com.example.chatbot.service.person.admin;
 
 import com.example.chatbot.dto.user.request.RetrieveUsersFilterRequestDto;
 import com.example.chatbot.dto.user.response.PagedUsersResponseDto;
-import com.example.chatbot.dto.user.response.RetrieveUsersFilterResponseDto;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.mapper.person.PersonMapper;
 import com.example.chatbot.repository.PersonRepository;

@@ -6,7 +6,6 @@ import com.example.chatbot.dto.notification.response.RegisterAdminNotificationRe
 import com.example.chatbot.dto.notification.response.RetrieveMyNotificationResponseDto;
 import com.example.chatbot.entity.NotificationEntity;
 import com.example.chatbot.entity.PersonEntity;
-import com.example.chatbot.entity.enums.NotificationTypeEnum;
 import com.example.chatbot.exception.EliminationNotification;
 import com.example.chatbot.exception.RegisterNotificationException;
 import com.example.chatbot.exception.RetrieveNotificationException;
@@ -35,7 +34,7 @@ public class MessagingService {
         List<NotificationEntity> notificationEntities=notificationRepository.findByPersonEntityId(UUID.fromString(personId)).
                 orElseThrow(()->new RetrieveNotificationException("It run into a problem retrieving notifications" ));
 
-        List<RetrieveMyNotificationResponseDto> responseDtos=new ArrayList<RetrieveMyNotificationResponseDto>();
+        List<RetrieveMyNotificationResponseDto> responseDtos=new ArrayList<>();
 
         notificationEntities.forEach(entity->responseDtos.add(notificationMapper.
                 notificationEntityToRetrieveNotificationResponseDto(entity))
@@ -46,22 +45,22 @@ public class MessagingService {
     }
 
     public void registerInternalNotification(String personId,RegisterNotificationRequestDto requestDto){
-        registerNotification(NotificationTypeEnum.REGISTER,personId,requestDto);
+        registerNotification(personId,requestDto);
     }
 
     public RegisterAdminNotificationResponseDto registerAdminNotification(String personId, RegisterNotificationRequestDto requestDto){
-        registerNotification(NotificationTypeEnum.ADMIN_MESSAGE,personId,requestDto);
+        registerNotification(personId,requestDto);
         return new RegisterAdminNotificationResponseDto("Message Successfully sent");
     }
 
-    private void registerNotification(NotificationTypeEnum typeEnum,
+    private void registerNotification(
                                      String personId,
                                      RegisterNotificationRequestDto requestDto){
 
         PersonEntity personEntity=personRepository.findById(UUID.fromString(personId)).
                 orElseThrow(()-> new RegisterNotificationException("It run into a problem sending the message"));
 
-        NotificationEntity notificationEntity=notificationMapper.registerNotificationRequestDtoToEntity(personEntity,typeEnum,requestDto);
+        NotificationEntity notificationEntity=notificationMapper.registerNotificationRequestDtoToEntity(personEntity,requestDto);
         notificationRepository.save(notificationEntity);
         log.info ("Message successfully sent");
 
@@ -74,6 +73,13 @@ public class MessagingService {
 
         notificationRepository.delete(notificationEntity);
         return new EliminationNotificationResponseDto("Notification successfully dropped");
+    }
+
+    public void markNotificationAsRead(String notificationId){
+        NotificationEntity notification = notificationRepository.findById(UUID.fromString(notificationId))
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        notification.setRead(true);
+        notificationRepository.save(notification);
     }
 
 

@@ -11,11 +11,10 @@ import org.springframework.stereotype.Component;
 public class NotificationMapper {
 
     public NotificationEntity registerNotificationRequestDtoToEntity(PersonEntity personEntity,
-                                                                     NotificationTypeEnum notificationTypeEnum,
                                                                      RegisterNotificationRequestDto requestDto){
         NotificationEntity notificationEntity=new NotificationEntity();
         notificationEntity.setPersonEntity(personEntity);
-        notificationEntity.setNotificationTypeEnum(notificationTypeEnum);
+        notificationEntity.setSubject(requestDto.getSubject());
         notificationEntity.setDescription(requestDto.getMessageDescription());
         notificationEntity.setRead(false);
 
@@ -27,6 +26,8 @@ public class NotificationMapper {
         RetrieveMyNotificationResponseDto retrieveMyNotificationResponseDto=new RetrieveMyNotificationResponseDto();
         retrieveMyNotificationResponseDto.setMessage(notificationEntity.getDescription());
         retrieveMyNotificationResponseDto.setNotificationId(String.valueOf(notificationEntity.getId()));
+        retrieveMyNotificationResponseDto.setSubject(notificationEntity.getSubject());
+        retrieveMyNotificationResponseDto.setRead(notificationEntity.isRead());
 
         return retrieveMyNotificationResponseDto;
 

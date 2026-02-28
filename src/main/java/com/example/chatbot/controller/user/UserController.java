@@ -4,6 +4,7 @@ import com.example.chatbot.dto.user.request.UpdateUserAccountRequestDto;
 import com.example.chatbot.dto.user.response.DeleteUserResponseDto;
 import com.example.chatbot.dto.user.response.RetrievePersonDataResponseDto;
 import com.example.chatbot.dto.user.response.UpdateUserAccountResponseDto;
+import com.example.chatbot.service.messaging.MessagingService;
 import com.example.chatbot.service.person.user.MyAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final MyAccountService myAccountService;
+    private final MessagingService messagingService;
 
     @GetMapping("/see/{personId}")
     public ResponseEntity<RetrievePersonDataResponseDto> getPersonData(@PathVariable String personId){
@@ -31,5 +33,7 @@ public class UserController {
                                                                    @RequestBody  UpdateUserAccountRequestDto updateUserAccountRequestDto){
         return ResponseEntity.ok(myAccountService.editMyData(personId,updateUserAccountRequestDto));
     }
+
+
 
 }

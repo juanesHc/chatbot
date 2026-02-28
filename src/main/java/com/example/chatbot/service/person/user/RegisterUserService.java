@@ -45,6 +45,7 @@ public class RegisterUserService {
         PersonEntity personSaved=personRepository.save(newUser);
 
         RegisterNotificationRequestDto registerNotificationRequestDto=new RegisterNotificationRequestDto();
+        registerNotificationRequestDto.setSubject("Welcome");
         registerNotificationRequestDto.setMessageDescription("Hello "+personSaved.getFirstName()+" Welcome to ChatBotApp");
 
         messagingService.registerInternalNotification(String.valueOf(personSaved.getId()),registerNotificationRequestDto);

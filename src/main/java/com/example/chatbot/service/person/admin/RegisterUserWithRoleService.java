@@ -39,7 +39,8 @@ public class RegisterUserWithRoleService {
         PersonEntity personSaved=personRepository.save(personEntity);
 
         RegisterNotificationRequestDto registerNotificationRequestDto=new RegisterNotificationRequestDto();
-        registerNotificationRequestDto.setMessageDescription("Hello"+personSaved.getFirstName()+" Welcome to ChatBotApp");
+        registerNotificationRequestDto.setSubject("Welcome");
+        registerNotificationRequestDto.setMessageDescription("Hello "+personSaved.getFirstName()+" Welcome to ChatBotApp");
 
         messagingService.registerInternalNotification(String.valueOf(personSaved.getId()),registerNotificationRequestDto);
         return new RegisterUserWithRoleResponseDto("The user was successfully saved");

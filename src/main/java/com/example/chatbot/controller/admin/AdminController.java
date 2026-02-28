@@ -1,9 +1,12 @@
 package com.example.chatbot.controller.admin;
 
+import com.example.chatbot.dto.notification.request.RegisterNotificationRequestDto;
+import com.example.chatbot.dto.notification.response.RegisterAdminNotificationResponseDto;
 import com.example.chatbot.dto.user.request.RegisterUserWithRoleRequestDto;
 import com.example.chatbot.dto.user.request.RetrieveUsersFilterRequestDto;
 import com.example.chatbot.dto.user.response.PagedUsersResponseDto;
 import com.example.chatbot.dto.user.response.RegisterUserWithRoleResponseDto;
+import com.example.chatbot.service.messaging.MessagingService;
 import com.example.chatbot.service.person.admin.RegisterUserWithRoleService;
 import com.example.chatbot.service.person.admin.RetrieveUsersService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ public class AdminController {
 
     private final RetrieveUsersService userService;
     private final RegisterUserWithRoleService registerUserWithRoleService;
+    private final MessagingService messagingService;
 
     @GetMapping("/retrieve")
     public ResponseEntity<PagedUsersResponseDto> retrieveUsers(
@@ -54,7 +58,11 @@ public class AdminController {
 
         return ResponseEntity.ok(registerUserWithRoleService.registerUserWithRole(requestDto));
 
-
     }
 
+    @PostMapping("/sent/{personId}")
+    public ResponseEntity<RegisterAdminNotificationResponseDto> postAdminNotification(@PathVariable String personId,
+                                                                                      @RequestBody RegisterNotificationRequestDto requestDto){
+        return ResponseEntity.ok(messagingService.registerAdminNotification(personId,requestDto));
+    }
 }
