@@ -26,4 +26,10 @@ public class NotificationController {
         return ResponseEntity.ok(messagingService.dropNotification(notificationId));
     }
 
+    @PatchMapping("/read/{notificationId}")
+    public ResponseEntity<Void> markAsRead(@PathVariable String notificationId) {
+        messagingService.markNotificationAsRead(notificationId);
+        return ResponseEntity.ok().build();
+    }
+
 }

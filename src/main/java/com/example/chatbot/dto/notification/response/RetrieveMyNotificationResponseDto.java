@@ -11,6 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RetrieveMyNotificationResponseDto {
+    private String subject;
     private String notificationId;
     private String message;
+    private Boolean read;
 }

@@ -25,6 +25,7 @@ public class PersonMapper {
 
     public RetrieveUsersFilterResponseDto PersonEntityToRetrieveUsersFilterDto(PersonEntity entity) {
         return RetrieveUsersFilterResponseDto.builder()
+                .personId(entity.getId().toString())
                 .givenName(entity.getFirstName())
                 .familyName(entity.getLastName())
                 .email(entity.getEmail())

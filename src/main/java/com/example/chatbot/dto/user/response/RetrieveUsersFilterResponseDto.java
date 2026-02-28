@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class RetrieveUsersFilterResponseDto {
-
+    private String personId;
     private String givenName;
     private String familyName;
     private String email;
