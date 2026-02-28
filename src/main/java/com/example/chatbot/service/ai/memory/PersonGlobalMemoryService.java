@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -47,27 +48,23 @@ public class PersonGlobalMemoryService {
 
             if (importance >= GLOBAL_MEMORY_THRESHOLD) {
 
-                PersonGlobalMemoryEntity memory = globalMemoryRepository
-                        .findByPersonEntityAndKey(person, key).
-                        orElseThrow(()->new GlobalMemoryException("It run into a problem trying to retrieve global memories"));
+                Optional<PersonGlobalMemoryEntity> existing = globalMemoryRepository
+                        .findByPersonEntityAndKey(person, key);
 
-                boolean isNew = (memory == null);
+                PersonGlobalMemoryEntity memory;
 
-                if (isNew) {
+                if (existing.isEmpty()) {
                     memory = new PersonGlobalMemoryEntity();
                     memory.setPersonEntity(person);
                     memory.setKey(key);
                     memory.setValue(value);
                     memory.setPriority(calculatePriority(importance, true));
                     memory.setFrequency(1);
-                    log.info("Creating NEW global memory: {} = {} (priority: {})",
-                            key, value, memory.getPriority());
                 } else {
+                    memory = existing.get();
                     memory.setValue(value);
                     memory.setFrequency(memory.getFrequency() + 1);
                     memory.setPriority(calculatePriorityWithFrequency(importance, memory.getFrequency()));
-                    log.info("Updating EXISTING global memory: {} = {} (priority: {}, frequency: {})",
-                            key, value, memory.getPriority(), memory.getFrequency());
                 }
 
                 globalMemoryRepository.save(memory);
