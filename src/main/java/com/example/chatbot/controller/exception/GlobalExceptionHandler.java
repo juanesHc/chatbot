@@ -104,4 +104,25 @@ public class GlobalExceptionHandler {
         return new ExceptionDto("UPDATE_USER_ACCOUNT_ERROR", ex.getMessage(), null);
     }
 
+    @ExceptionHandler(EliminationNotification.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleEliminationNotification(EliminationNotification ex) {
+        log.error(" error trying to drop notification", ex);
+        return new ExceptionDto("ELIMINATION_NOTIFICATION_ERROR", ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(RegisterNotificationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleRegisterNotification(RegisterNotificationException ex) {
+        log.error(" error trying to register notification", ex);
+        return new ExceptionDto("REGISTER_NOTIFICATION_ERROR", ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(RetrieveNotificationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handleRetrieveNotification(RetrieveNotificationException ex) {
+        log.error(" error trying to retrieve notifications", ex);
+        return new ExceptionDto("RETRIEVING_NOTIFICATION_ERROR", ex.getMessage(), null);
+    }
+
 }

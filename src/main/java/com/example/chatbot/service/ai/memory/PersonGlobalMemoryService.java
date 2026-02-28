@@ -1,7 +1,6 @@
 package com.example.chatbot.service.ai.memory;
 
 import com.example.chatbot.dto.globalMemory.RetrieveGlobalMemoryResponseDto;
-import com.example.chatbot.entity.MemoryEntity;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.entity.PersonGlobalMemoryEntity;
 import com.example.chatbot.exception.ChatException;
@@ -49,14 +48,14 @@ public class PersonGlobalMemoryService {
             if (importance >= GLOBAL_MEMORY_THRESHOLD) {
 
                 PersonGlobalMemoryEntity memory = globalMemoryRepository
-                        .findByPersonAndKey(person, key).
+                        .findByPersonEntityAndKey(person, key).
                         orElseThrow(()->new GlobalMemoryException("It run into a problem trying to retrieve global memories"));
 
                 boolean isNew = (memory == null);
 
                 if (isNew) {
                     memory = new PersonGlobalMemoryEntity();
-                    memory.setPerson(person);
+                    memory.setPersonEntity(person);
                     memory.setKey(key);
                     memory.setValue(value);
                     memory.setPriority(calculatePriority(importance, true));
