@@ -1,6 +1,7 @@
 package com.example.chatbot.service.person.user;
 
 import com.example.chatbot.dto.login.response.LoginResponseDto;
+import com.example.chatbot.dto.notification.request.RegisterInternalNotificationRequestDto;
 import com.example.chatbot.dto.notification.request.RegisterNotificationRequestDto;
 import com.example.chatbot.dto.user.request.RegisterUserRequestDto;
 import com.example.chatbot.entity.PersonEntity;
@@ -44,7 +45,7 @@ public class RegisterUserService {
         newUser.setRoleEntity(roleEntity);
         PersonEntity personSaved=personRepository.save(newUser);
 
-        RegisterNotificationRequestDto registerNotificationRequestDto=new RegisterNotificationRequestDto();
+        RegisterInternalNotificationRequestDto registerNotificationRequestDto=new RegisterInternalNotificationRequestDto();
         registerNotificationRequestDto.setSubject("Welcome");
         registerNotificationRequestDto.setMessageDescription("Hello "+personSaved.getFirstName()+" Welcome to ChatBotApp");
 

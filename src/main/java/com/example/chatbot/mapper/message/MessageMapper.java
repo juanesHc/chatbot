@@ -1,10 +1,10 @@
 package com.example.chatbot.mapper.message;
 
-import com.example.chatbot.dto.message.RegisterMessageRequestDto;
-import com.example.chatbot.dto.message.RetrieveMessageResponseDto;
+import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.response.RetrieveMessageResponseDto;
 import com.example.chatbot.entity.ChatEntity;
 import com.example.chatbot.entity.MessageEntity;
-import com.example.chatbot.entity.enums.MessageRoleEnum;
+import com.example.chatbot.entity.enums.MessageBotRoleEnum;
 import com.example.chatbot.exception.MessageException;
 import com.example.chatbot.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,14 @@ public class MessageMapper {
 
     private final ChatRepository chatRepository;
 
-    public MessageEntity registerMessageRequestDtoToMessageEntity(RegisterMessageRequestDto registerMessageRequestDto, MessageRoleEnum messageRoleEnum,String chatId){
+    public MessageEntity registerMessageRequestDtoToMessageEntity(RegisterMessageRequestDto registerMessageRequestDto, MessageBotRoleEnum messageBotRoleEnum, String chatId){
 
         MessageEntity messageEntity=new MessageEntity();
         ChatEntity chatEntity=chatRepository.findById(UUID.fromString(chatId)).
                 orElseThrow(()-> new MessageException("Chat not found"));
 
         messageEntity.setMessageContent(registerMessageRequestDto.getMessageContent());
-        messageEntity.setMessageRoleEnum(messageRoleEnum);
+        messageEntity.setMessageBotRoleEnum(messageBotRoleEnum);
         messageEntity.setChatEntity(chatEntity);
 
         return messageEntity;
@@ -35,7 +35,7 @@ public class MessageMapper {
 
         RetrieveMessageResponseDto retrieveMessageResponseDto=new RetrieveMessageResponseDto();
 
-        retrieveMessageResponseDto.setType(messageEntity.getMessageRoleEnum());
+        retrieveMessageResponseDto.setType(messageEntity.getMessageBotRoleEnum());
         retrieveMessageResponseDto.setContent(messageEntity.getMessageContent());
         retrieveMessageResponseDto.setTimestamp(messageEntity.getCreatedAt());
 

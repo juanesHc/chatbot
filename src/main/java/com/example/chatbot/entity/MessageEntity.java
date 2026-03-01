@@ -1,6 +1,6 @@
 package com.example.chatbot.entity;
 
-import com.example.chatbot.entity.enums.MessageRoleEnum;
+import com.example.chatbot.entity.enums.MessageBotRoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 public class MessageEntity extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
-    private MessageRoleEnum messageRoleEnum;
+    private MessageBotRoleEnum messageBotRoleEnum;
 
     private String messageContent;
 

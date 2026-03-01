@@ -15,4 +15,6 @@ public class RetrieveMyNotificationResponseDto {
     private String notificationId;
     private String message;
     private Boolean read;
+    private String senderName;
+    private String senderId;
 }

@@ -1,14 +1,11 @@
 package com.example.chatbot.controller.chat;
 
 import com.example.chatbot.dto.chat.request.RegisterChatNameRequestDto;
-import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
 import com.example.chatbot.dto.chat.response.DeleteChatResponseDto;
 import com.example.chatbot.dto.chat.response.RegisterChatNameResponseDto;
 import com.example.chatbot.dto.chat.response.RetrieveChatsNameResponseDto;
-import com.example.chatbot.dto.message.RegisterMessageRequestDto;
 import com.example.chatbot.service.ai.chat.DeleteChatWithContentService;
 import com.example.chatbot.service.ai.chat.EditChatNameService;
-import com.example.chatbot.service.ai.gemini.GeminiService;
 import com.example.chatbot.service.ai.chat.RegisterChatNameService;
 import com.example.chatbot.service.ai.chat.RetrieveChatsService;
 import jakarta.validation.Valid;

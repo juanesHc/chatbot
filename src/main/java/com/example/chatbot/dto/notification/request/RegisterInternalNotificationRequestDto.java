@@ -9,8 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RegisterNotificationRequestDto {
-    private String senderId;
+public class RegisterInternalNotificationRequestDto {
     private String subject;
     private String messageDescription;
 }

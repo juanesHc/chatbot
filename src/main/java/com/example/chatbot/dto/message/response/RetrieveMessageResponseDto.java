@@ -1,19 +1,18 @@
-package com.example.chatbot.dto.message;
+package com.example.chatbot.dto.message.response;
 
 
-import com.example.chatbot.entity.enums.MessageRoleEnum;
+import com.example.chatbot.entity.enums.MessageBotRoleEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class RetrieveMessageResponseDto {
     private String content;
-    private MessageRoleEnum type;
+    private MessageBotRoleEnum type;
     private LocalDateTime timestamp;
 }
