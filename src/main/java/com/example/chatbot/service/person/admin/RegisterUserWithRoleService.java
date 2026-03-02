@@ -1,5 +1,6 @@
 package com.example.chatbot.service.person.admin;
 
+import com.example.chatbot.dto.notification.request.RegisterInternalNotificationRequestDto;
 import com.example.chatbot.dto.notification.request.RegisterNotificationRequestDto;
 import com.example.chatbot.dto.user.request.RegisterUserWithRoleRequestDto;
 import com.example.chatbot.dto.user.response.RegisterUserWithRoleResponseDto;
@@ -38,7 +39,7 @@ public class RegisterUserWithRoleService {
         personEntity.setRoleEntity(roleEntity);
         PersonEntity personSaved=personRepository.save(personEntity);
 
-        RegisterNotificationRequestDto registerNotificationRequestDto=new RegisterNotificationRequestDto();
+        RegisterInternalNotificationRequestDto registerNotificationRequestDto=new RegisterInternalNotificationRequestDto();
         registerNotificationRequestDto.setSubject("Welcome");
         registerNotificationRequestDto.setMessageDescription("Hello "+personSaved.getFirstName()+" Welcome to ChatBotApp");
 

@@ -1,9 +1,9 @@
 package com.example.chatbot.service.ai.message;
 
-import com.example.chatbot.dto.message.RegisterMessageRequestDto;
-import com.example.chatbot.dto.message.RetrieveMessageResponseDto;
+import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.response.RetrieveMessageResponseDto;
 import com.example.chatbot.entity.MessageEntity;
-import com.example.chatbot.entity.enums.MessageRoleEnum;
+import com.example.chatbot.entity.enums.MessageBotRoleEnum;
 import com.example.chatbot.exception.MessageException;
 import com.example.chatbot.mapper.message.MessageMapper;
 import com.example.chatbot.repository.MessageRepository;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +23,14 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
     public void registerPersonMessage(RegisterMessageRequestDto registerMessageRequestDto,String chatId){
-        registerMessage(registerMessageRequestDto,MessageRoleEnum.PERSON,chatId);
+        registerMessage(registerMessageRequestDto, MessageBotRoleEnum.PERSON,chatId);
     }
 
     public void registerBotMessage(RegisterMessageRequestDto registerMessageRequestDto,String chatId){
-        registerMessage(registerMessageRequestDto,MessageRoleEnum.BOT,chatId);
+        registerMessage(registerMessageRequestDto, MessageBotRoleEnum.BOT,chatId);
     }
 
-    private void registerMessage(RegisterMessageRequestDto registerMessageRequestDto, MessageRoleEnum roleEnum,String chatId){
+    private void registerMessage(RegisterMessageRequestDto registerMessageRequestDto, MessageBotRoleEnum roleEnum, String chatId){
 
         MessageEntity messageEntity=messageMapper.registerMessageRequestDtoToMessageEntity(registerMessageRequestDto,roleEnum,chatId);
         messageRepository.save(messageEntity);

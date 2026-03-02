@@ -5,16 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+@NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-public class RetrieveMyNotificationResponseDto {
+public class RetrieveSentMessagesResponseDto {
+
     private String subject;
     private String notificationId;
     private String message;
     private Boolean read;
-    private String senderName;
-    private String senderId;
+    private String receiverName;
+
 }

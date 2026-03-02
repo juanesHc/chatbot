@@ -1,7 +1,7 @@
 package com.example.chatbot.service.ai.gemini;
 
 import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
-import com.example.chatbot.dto.message.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
 import com.example.chatbot.entity.*;
 import com.example.chatbot.exception.GeminiException;
 import com.example.chatbot.exception.MessageException;
@@ -277,7 +277,7 @@ public class GeminiService {
     private String buildConversationContext(List<MessageEntity> messages) {
         StringBuilder sb = new StringBuilder();
         for (MessageEntity msg : messages) {
-            sb.append(msg.getMessageRoleEnum()).append(": ")
+            sb.append(msg.getMessageBotRoleEnum()).append(": ")
                     .append(msg.getMessageContent()).append("\n");
         }
         return sb.toString();

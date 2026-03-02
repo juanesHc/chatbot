@@ -1,8 +1,8 @@
 package com.example.chatbot.controller.message;
 
 import com.example.chatbot.dto.chat.response.ChatBotResponseDto;
-import com.example.chatbot.dto.message.RegisterMessageRequestDto;
-import com.example.chatbot.dto.message.RetrieveMessageResponseDto;
+import com.example.chatbot.dto.message.request.RegisterMessageRequestDto;
+import com.example.chatbot.dto.message.response.RetrieveMessageResponseDto;
 import com.example.chatbot.service.ai.gemini.GeminiService;
 import com.example.chatbot.service.ai.message.MessageService;
 import lombok.RequiredArgsConstructor;

@@ -2,6 +2,7 @@ package com.example.chatbot.controller.admin;
 
 import com.example.chatbot.dto.notification.request.RegisterNotificationRequestDto;
 import com.example.chatbot.dto.notification.response.RegisterAdminNotificationResponseDto;
+import com.example.chatbot.dto.notification.response.RetrieveSentMessagesResponseDto;
 import com.example.chatbot.dto.user.request.RegisterUserWithRoleRequestDto;
 import com.example.chatbot.dto.user.request.RetrieveUsersFilterRequestDto;
 import com.example.chatbot.dto.user.response.PagedUsersResponseDto;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -64,5 +66,10 @@ public class AdminController {
     public ResponseEntity<RegisterAdminNotificationResponseDto> postAdminNotification(@PathVariable String personId,
                                                                                       @RequestBody RegisterNotificationRequestDto requestDto){
         return ResponseEntity.ok(messagingService.registerAdminNotification(personId,requestDto));
+    }
+
+    @GetMapping("/sent/{adminId}")
+    public ResponseEntity<List<RetrieveSentMessagesResponseDto>> getSentMessages(@PathVariable String adminId) {
+        return ResponseEntity.ok(messagingService.retrieveAdminSentMessages(adminId));
     }
 }
