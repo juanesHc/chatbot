@@ -6,12 +6,14 @@ import com.example.chatbot.dto.notification.request.RetrieveNotificationRequestD
 import com.example.chatbot.dto.notification.response.EliminationNotificationResponseDto;
 import com.example.chatbot.dto.notification.response.RegisterAdminNotificationResponseDto;
 import com.example.chatbot.dto.notification.response.RetrieveMyNotificationResponseDto;
+import com.example.chatbot.dto.notification.response.RetrieveSentMessagesResponseDto;
 import com.example.chatbot.entity.NotificationEntity;
 import com.example.chatbot.entity.PersonEntity;
 import com.example.chatbot.entity.enums.PersonNotificationRole;
 import com.example.chatbot.exception.EliminationNotification;
 import com.example.chatbot.exception.RegisterNotificationException;
 import com.example.chatbot.exception.RetrieveNotificationException;
+import com.example.chatbot.exception.RetrievePersonException;
 import com.example.chatbot.mapper.notification.NotificationMapper;
 import com.example.chatbot.repository.NotificationRepository;
 import com.example.chatbot.repository.PersonRepository;
@@ -19,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 @Slf4j
 @Service
@@ -37,7 +39,7 @@ public class MessagingService {
 
     public List<RetrieveMyNotificationResponseDto> retrieveMyMessages(String personId, RetrieveNotificationRequestDto requestDto) {
         List<NotificationEntity> notificationEntities = notificationRepository
-                .findByPersonEntityId(UUID.fromString(personId))
+                .findByReceiverId(UUID.fromString(personId))
                 .orElseThrow(() -> new RetrieveNotificationException("It run into a problem retrieving notifications"));
 
         Stream<NotificationEntity> stream = notificationEntities.stream();
@@ -78,6 +80,18 @@ public class MessagingService {
         return new EliminationNotificationResponseDto("Notification successfully dropped");
     }
 
+    public List<RetrieveSentMessagesResponseDto> retrieveAdminSentMessages(String adminId) {
+        List<NotificationEntity> notificationEntitiesList = notificationRepository
+                .findBySenderIdAndPersonNotificationRole(
+                        UUID.fromString(adminId),
+                        PersonNotificationRole.RECEIVER)
+                .orElseThrow(() -> new RetrievePersonException("Could not found the person"));
+
+        return notificationEntitiesList.stream()
+                .map(notificationMapper::mapToSentMessageDto)
+                .collect(Collectors.toList());
+    }
+
     public void markNotificationAsRead(String notificationId){
         NotificationEntity notification = notificationRepository.findById(UUID.fromString(notificationId))
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
@@ -107,6 +121,8 @@ public class MessagingService {
         PersonEntity sender = personRepository.findById(UUID.fromString(requestDto.getSenderId()))
                 .orElseThrow(() -> new RegisterNotificationException("Sender not found"));
         notificationEntity.setSender(sender);
+
+        notificationEntity.setReceiver(personEntity);
 
         notificationRepository.save(notificationEntity);
     }

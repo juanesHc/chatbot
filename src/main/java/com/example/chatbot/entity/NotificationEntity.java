@@ -1,7 +1,6 @@
 package com.example.chatbot.entity;
 
 
-import com.example.chatbot.entity.enums.NotificationTypeEnum;
 import com.example.chatbot.entity.enums.PersonNotificationRole;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class NotificationEntity extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "person_id")
-    private PersonEntity personEntity;
+    private PersonEntity receiver;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")

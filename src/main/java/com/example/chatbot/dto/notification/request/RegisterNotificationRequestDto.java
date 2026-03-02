@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class RegisterNotificationRequestDto {
+    private String receiverId;
     private String senderId;
     private String subject;
     private String messageDescription;

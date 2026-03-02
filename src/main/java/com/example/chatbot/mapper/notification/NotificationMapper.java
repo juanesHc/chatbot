@@ -2,17 +2,12 @@ package com.example.chatbot.mapper.notification;
 
 import com.example.chatbot.dto.notification.request.RegisterInternalNotificationRequestDto;
 import com.example.chatbot.dto.notification.request.RegisterNotificationRequestDto;
-import com.example.chatbot.dto.notification.request.RetrieveNotificationRequestDto;
 import com.example.chatbot.dto.notification.response.RetrieveMyNotificationResponseDto;
+import com.example.chatbot.dto.notification.response.RetrieveSentMessagesResponseDto;
 import com.example.chatbot.entity.NotificationEntity;
 import com.example.chatbot.entity.PersonEntity;
-import com.example.chatbot.entity.enums.NotificationTypeEnum;
-import com.example.chatbot.exception.RetrieveNotificationException;
-import com.example.chatbot.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +16,7 @@ public class NotificationMapper {
     public NotificationEntity registerNotificationRequestDtoToEntity(PersonEntity personEntity,
                                                                      RegisterNotificationRequestDto requestDto){
         NotificationEntity notificationEntity=new NotificationEntity();
-        notificationEntity.setPersonEntity(personEntity);
+        notificationEntity.setReceiver(personEntity);
         notificationEntity.setSubject(requestDto.getSubject());
         notificationEntity.setDescription(requestDto.getMessageDescription());
         notificationEntity.setRead(false);
@@ -32,7 +27,7 @@ public class NotificationMapper {
     public NotificationEntity registerInternalNotificationRequestDtoToEntity(PersonEntity personEntity,
                                                                      RegisterInternalNotificationRequestDto requestDto){
         NotificationEntity notificationEntity=new NotificationEntity();
-        notificationEntity.setPersonEntity(personEntity);
+        notificationEntity.setReceiver(personEntity);
         notificationEntity.setSubject(requestDto.getSubject());
         notificationEntity.setDescription(requestDto.getMessageDescription());
         notificationEntity.setRead(false);
@@ -57,6 +52,20 @@ public class NotificationMapper {
             dto.setSenderId(null);
         }
 
+        return dto;
+    }
+
+    public RetrieveSentMessagesResponseDto mapToSentMessageDto(NotificationEntity entity) {
+        RetrieveSentMessagesResponseDto dto = new RetrieveSentMessagesResponseDto();
+        dto.setNotificationId(String.valueOf(entity.getId()));
+        dto.setSubject(entity.getSubject());
+        dto.setMessage(entity.getDescription());
+        dto.setRead(entity.isRead());
+        if (entity.getReceiver() != null) {
+            dto.setReceiverName(
+                    entity.getReceiver().getFirstName() + " " + entity.getReceiver().getLastName()
+            );
+        }
         return dto;
     }
 

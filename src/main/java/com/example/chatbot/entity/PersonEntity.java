@@ -29,7 +29,7 @@ public class PersonEntity extends BaseEntity{
     @OneToMany(mappedBy = "personEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PersonGlobalMemoryEntity> personGlobalMemoryEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "personEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotificationEntity> notificationEntities = new ArrayList<>();
 
 
